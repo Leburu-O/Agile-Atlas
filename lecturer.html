@@ -5,78 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GroupTrack - Lecturer Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
+    <!-- Top Section -->
+    <header class="top-header">
+        <div class="logo-container">
+            <img src="assets/logo.png" alt="GroupTrack Logo" class="logo">
+            <h1>GroupTrack Lecturer Dashboard</h1>
+        </div>
+        <!-- Red Alert Banner -->
+        <div class="alert-banner danger">
+            ⚠️ Free Rider Alert – 2 students with &lt;15% contribution
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Left Sidebar Navigation -->
         <aside class="sidebar">
-            <h2>Agile Atlas</h2>
-            <nav class="sidebar-nav">
-                <a href="lecturer.html" class="nav-item active"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="#" class="nav-item"><i class="fas fa-chart-bar"></i> Analytics</a>
-                <a href="#" class="nav-item"><i class="fas fa-file-export"></i> Reports</a>
-                <a href="index.html" class="nav-item" style="margin-top: 50px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <nav>
+                <ul>
+                    <li><a href="lecturer.html" class="active">Dashboard</a></li>
+                    <li><a href="index.html">My Courses</a></li>
+                    <li><a href="#">Group Reports</a></li>
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="#" onclick="exportReports()">Export Reports</a></li>
+                    <li class="logout-item"><a href="#" onclick="logout()">Logout</a></li>
+                </ul>
             </nav>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
-            <header class="top-header">
-                <h1>Lecturer Dashboard</h1>
-                <div><i class="fas fa-bell"></i> 👤 Dr. Smith</div>
-            </header>
-
-            <!-- Alert Box -->
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle"></i>
-                <div><strong>Free Rider Alert!</strong> 2 students in CS101 Group A have &lt;15% contribution.</div>
-            </div>
-
-            <div class="dashboard-content">
-                <div class="dashboard-grid">
-                    <!-- Class Performance Chart -->
-                    <section class="card">
-                        <h3>📈 Class Performance (Click Bar to View Students)</h3>
-                        <canvas id="lecturerChart"></canvas>
-                        <p style="font-size:0.8rem; color:#666; text-align:center; margin-top:10px;">💡 Tip: Click any bar to see individual contributions</p>
-                    </section>
-
-                    <!-- Actions -->
-                    <section class="card">
-                        <h3>🛠️ Actions</h3>
-                        <p>Group A: <span class="badge badge-danger">At Risk</span></p>
-                        <p>Group B: <span class="badge badge-success">Active</span></p>
-                        <button class="btn-block" onclick="alert('Generating PDF Report...')"><i class="fas fa-file-pdf"></i> Export Contribution Report</button>
-                        <button class="btn-block btn-secondary" style="margin-top:10px;" onclick="alert('AI Suggestion: Reassign tasks from Alex to Jamie.')"><i class="fas fa-robot"></i> AI Workload Suggestion</button>
-                    </section>
+            <!-- 1. Bar Chart Section -->
+            <section class="chart-section">
+                <h2>Class Performance by Group</h2>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
                 </div>
+            </section>
 
-                <!-- Individual Student Breakdown (Hidden by default) -->
-                <section class="card hidden" id="lecturer-drilldown">
-                    <button class="btn-outline" onclick="toggleDrilldown()" style="margin-bottom:15px;">← Back to Class Overview</button>
-                    <h3>👥 Group A - Individual Contributions</h3>
-                    <table>
+            <!-- 2. Group Monitoring Section -->
+            <section class="monitoring-section">
+                <h2>Group Status</h2>
+                <div class="status-cards">
+                    <div class="status-card active">
+                        <h3>Active</h3>
+                        <p class="status-count" id="activeCount">0</p>
+                        <span class="status-indicator green"></span>
+                    </div>
+                    <div class="status-card at-risk">
+                        <h3>At Risk</h3>
+                        <p class="status-count" id="atRiskCount">0</p>
+                        <span class="status-indicator yellow"></span>
+                    </div>
+                    <div class="status-card idle">
+                        <h3>Idle</h3>
+                        <p class="status-count" id="idleCount">0</p>
+                        <span class="status-indicator gray"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Actions Panel -->
+            <section class="actions-panel">
+                <button id="btnExportPDF" class="btn btn-primary">
+                    📄 Export PDF Report
+                </button>
+                <button id="btnAISuggest" class="btn btn-secondary">
+                    🤖 AI Workload Suggestions
+                </button>
+                <button id="btnNotify" class="btn btn-warning">
+                    🔔 Notify Low Contributors
+                </button>
+            </section>
+
+            <!-- 4. Student Data Table -->
+            <section class="table-section" id="drilldownSection">
+                <div class="table-header">
+                    <h2>Student Contribution Breakdown</h2>
+                    <button id="btnToggleTable" class="btn btn-text">Hide Details</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="studentTable">
                         <thead>
-                            <tr><th>Student</th><th>Tasks</th><th>Files</th><th>Contribution</th><th>Status</th></tr>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Tasks Completed</th>
+                                <th>Files Uploaded</th>
+                                <th>Contribution (%)</th>
+                                <th>Status</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <tr><td>Jamie Kim</td><td>8/10</td><td>5</td><td><strong>35%</strong></td><td><span class="badge badge-success">High</span></td></tr>
-                            <tr><td>Alex Chen</td><td>2/10</td><td>1</td><td><strong>12%</strong></td><td><span class="badge badge-danger">Low</span></td></tr>
-                            <tr><td>Maya Johnson</td><td>3/10</td><td>2</td><td><strong>8%</strong></td><td><span class="badge badge-danger">Low</span></td></tr>
-                            <tr><td>John Smith</td><td>7/10</td><td>4</td><td><strong>45%</strong></td><td><span class="badge badge-success">High</span></td></tr>
+                            <!-- Data will be populated by JavaScript -->
                         </tbody>
                     </table>
-                    <div style="margin-top:20px; text-align:right;">
-                        <button class="btn-secondary" onclick="alert('Email sent to low contributors.')"><i class="fas fa-envelope"></i> Notify Low Contributors</button>
-                    </div>
-                </section>
-            </div>
+                </div>
+            </section>
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Scripts -->
+    <script src="utils.js"></script>
+    <script src="main.js"></script>
+    <script src="lecturer.js"></script>
 </body>
 </html>
