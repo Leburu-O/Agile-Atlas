@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroupTrack - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="login-page">
+    <div id="login-screen">
+        <div class="login-box">
+            <h1 style="color:#0088cc;"><i class="fas fa-users-cog"></i> GroupTrack</h1>
+            <p>Botswana's Collaborative Learning Platform</p>
+            
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email Address</label>
+                <input type="email" id="email" value="student@bac.ac.bw" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" value="password" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-user-tag"></i> I am a:</label>
+                <select id="role-select">
+                    <option value="student">Student</option>
+                    <option value="lecturer">Lecturer</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary btn-block" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            
+            <button class="btn btn-outline btn-block" onclick="showToast('Sign up coming in v2.0')">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </button>
+            
+            <div class="demo-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; font-size: 0.85rem;">
+                <p><strong>Demo Accounts:</strong></p>
+                <p>👨‍🎓 Student: student@bac.ac.bw / password</p>
+                <p>👨‍ Lecturer: lecturer@bac.ac.bw / password</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Action completed!</span>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
