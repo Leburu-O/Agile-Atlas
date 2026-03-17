@@ -201,4 +201,3 @@ function updateStatusCounts() {
     document.getElementById('activeCount').textContent = active;
     document.getElementById('atRiskCount').textContent = atRisk;
     document.getElementById('idleCount').textContent = idle;
-}
